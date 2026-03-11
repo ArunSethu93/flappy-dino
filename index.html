@@ -109,8 +109,6 @@
       35%  { opacity:1; transform:translateY(-16px)  scale(1.18); }
       100% { opacity:0; transform:translateY(-50px)  scale(0.88); }
     }
-
-    /* ── AdSense ── */
     #ad-section {
       width: 100%;
       max-width: 900px;
@@ -172,7 +170,7 @@
 <div id="ad-section">
   <div id="ad-label">Advertisement</div>
   <div class="ad-slot">
-    <!-- Replace with your real AdSense values -->
+   
     <ins class="adsbygoogle"
          style="display:block"
          data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
@@ -185,12 +183,6 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════════════════
-//  FLAPPY SAURUS  —  Full dino-aesthetic pixel art edition
-//  Features: parallax jungle trees · active volcano · streak rewards ·
-//            streak rewards · day/night (longer) · speed per 1000 pts
-// ══════════════════════════════════════════════════════════════════════════════
-
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
 const W = 800, H = 400;
@@ -201,10 +193,9 @@ const PIPE_SPEED_BASE = 3.2;
 const GRAVITY         = 0.42;
 const FLAP_V          = -7.8;
 const BIRD_X          = 130;
-const SPEED_PER_PTS   = 1000;   // speed level every N points
-const DAY_NIGHT_PTS   = 150;    // day/night cycle length in score points
+const SPEED_PER_PTS   = 1000;   
+const DAY_NIGHT_PTS   = 150;    
 
-// ── Theme ─────────────────────────────────────────────────────────────────────
 let isNight = false;
 const DAY_BG = '#f7f7f7', DAY_FG = '#535353';
 const NGT_BG = '#1a1a2e', NGT_FG = '#cacaca';
@@ -212,7 +203,6 @@ function fg()   { return isNight ? NGT_FG : DAY_FG; }
 function bg()   { return isNight ? NGT_BG : DAY_BG; }
 function fga(a) { return isNight ? `rgba(202,202,202,${a})` : `rgba(83,83,83,${a})`; }
 
-// ── Audio ─────────────────────────────────────────────────────────────────────
 const AC = new (window.AudioContext || window.webkitAudioContext)();
 function tone(freq, dur, type='square', vol=0.07) {
   try {
@@ -231,7 +221,6 @@ const sfxHit   = () => tone(160,0.10,'square',0.10);
 const sfxMiss  = () => { tone(1320,0.04,'sine',0.08); setTimeout(()=>tone(1760,0.06,'sine',0.08),50); };
 const sfxSpeed = () => { tone(300,0.06,'square',0.08); setTimeout(()=>tone(440,0.12,'square',0.08),80); };
 
-// ── State ─────────────────────────────────────────────────────────────────────
 let state = 'idle';
 let score = 0;
 let hiScore = parseFloat(localStorage.getItem('flappySaurus_hi') || '0');
@@ -239,8 +228,6 @@ let frameN=0, pipeSpeed=PIPE_SPEED_BASE, speedLevel=1;
 let blinkOn=true, blinkT=0, deathTimer=0;
 let scoreFlash=0, scoreFlashLabel='';
 let lastMilestone=0, pipesCleared=0;
-
-// ── DOM bonus pops ────────────────────────────────────────────────────────────
 const canvasWrap = document.getElementById('canvas-wrap');
 function spawnPop(text, cls, logX, logY) {
   const scale = canvas.getBoundingClientRect().width / W;
@@ -253,12 +240,8 @@ function spawnPop(text, cls, logX, logY) {
   el.addEventListener('animationend', () => el.remove());
 }
 
-// ── Pixel helper ──────────────────────────────────────────────────────────────
 function px(x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(Math.round(x),Math.round(y),w,h); }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  BIRD  (pixel art, tilt, wing animation)
-// ══════════════════════════════════════════════════════════════════════════════
 const bird = {
   x:BIRD_X, y:H/2-20, vy:0, angle:0,
   dead:false, wingFrame:0, wingTick:0, flapAnim:0,
@@ -295,9 +278,6 @@ function drawBird(){
   ctx.restore();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  PIPES
-// ══════════════════════════════════════════════════════════════════════════════
 let pipes=[], pipeTimer=0, nextPipeIn=120;
 function spawnPipe(){
   const minTop=50,maxTop=GROUND_Y-GAP-50;
@@ -321,9 +301,6 @@ function drawPipe(p){
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  BACKGROUND — mountains, hills, stars, clouds, celestial
-// ══════════════════════════════════════════════════════════════════════════════
 const MTN_PEAKS=[
   {x:0,h:76},{x:55,h:108},{x:125,h:62},{x:195,h:128},{x:285,h:88},
   {x:355,h:118},{x:435,h:72},{x:505,h:102},{x:585,h:85},{x:655,h:115},
@@ -982,3 +959,4 @@ loop();
 </script>
 </body>
 </html>
+
