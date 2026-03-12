@@ -1,962 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🦕 Flappy Saurus</title>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --bg: #f7f7f7;
-      --fg: #535353;
-      --ui: #535353;
-    }
-    body.night {
-      --bg: #1a1a2e;
-      --fg: #cacaca;
-      --ui: #cacaca;
-    }
-
-    html, body {
-      width: 100%;
-      background: var(--bg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      font-family: 'Courier New', Courier, monospace;
-      transition: background 0.8s;
-      user-select: none;
-      -webkit-user-select: none;
-      overflow-x: hidden;
-    }
-
-    #game-container {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      padding: 10px 12px 0;
-    }
-
-    #hud {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 2px 2px 6px;
-    }
-    #hud-left { display: flex; flex-direction: column; gap: 2px; }
-    #hud-center { text-align: center; }
-    #hud-right { text-align: right; }
-
-    #hud span, #hud div {
-      font-size: clamp(11px, 2vw, 17px);
-      font-weight: bold;
-      color: var(--ui);
-      letter-spacing: 2px;
-      transition: color 0.4s;
-      line-height: 1.3;
-    }
-    #speed-display {
-      font-size: clamp(9px, 1.4vw, 12px) !important;
-      letter-spacing: 1px !important;
-      opacity: 0.6;
-    }
-
-    #canvas-wrap {
-      position: relative;
-      width: 100%;
-      line-height: 0;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-bottom: 2px solid var(--fg);
-      image-rendering: pixelated;
-      cursor: pointer;
-      transition: border-color 0.4s;
-    }
-
-    #tip {
-      font-size: clamp(8px, 1.2vw, 11px);
-      letter-spacing: 1.5px;
-      color: var(--ui);
-      opacity: 0.55;
-      margin: 5px 2px 0;
-      text-align: center;
-      transition: color 0.4s;
-    }
-
-    /* ── Floating bonus labels ── */
-    .bonus-pop {
-      position: absolute;
-      font-family: 'Courier New', Courier, monospace;
-      font-weight: bold;
-      font-size: clamp(11px, 1.8vw, 15px);
-      letter-spacing: 2px;
-      pointer-events: none;
-      white-space: nowrap;
-      color: var(--fg);
-      animation: floatUp 1.1s ease-out forwards;
-      z-index: 10;
-    }
-    .bonus-pop.miss   { font-size: clamp(9px, 1.4vw, 12px); }
-    .bonus-pop.speed  { font-size: clamp(9px, 1.3vw, 12px); opacity: 0.85; }
-    @keyframes floatUp {
-      0%   { opacity:1; transform:translateY(0)     scale(1);    }
-      35%  { opacity:1; transform:translateY(-16px)  scale(1.18); }
-      100% { opacity:0; transform:translateY(-50px)  scale(0.88); }
-    }
-    #ad-section {
-      width: 100%;
-      max-width: 900px;
-      margin: 14px 0 24px;
-      padding: 0 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    #ad-label {
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--ui);
-      opacity: 0.3;
-      text-transform: uppercase;
-    }
-    .ad-slot {
-      width: 100%;
-      min-height: 90px;
-      border: 1px solid rgba(83,83,83,0.13);
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-    body.night .ad-slot { border-color: rgba(202,202,202,0.08); }
-    ins.adsbygoogle { display: block; width: 100%; }
-    #ad-fallback {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; letter-spacing: 2px;
-      color: var(--ui); opacity: 0.18; pointer-events: none;
-      font-family: 'Courier New', monospace;
-    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{--bg:#f7f7f7;--fg:#535353;--ui:#535353;}
+    body.night{--bg:#1a1a2e;--fg:#cacaca;--ui:#cacaca;}
+    html,body{width:100%;background:var(--bg);display:flex;flex-direction:column;align-items:center;min-height:100vh;font-family:'Courier New',Courier,monospace;transition:background 0.8s;user-select:none;-webkit-user-select:none;overflow-x:hidden;}
+    #game-container{position:relative;width:100%;max-width:900px;padding:10px 12px 0;}
+    #hud{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 6px;}
+    #hud-left{display:flex;flex-direction:column;gap:2px;}
+    #hud span,#hud div{font-size:clamp(11px,2vw,17px);font-weight:bold;color:var(--ui);letter-spacing:2px;transition:color 0.4s;line-height:1.3;}
+    #speed-display{font-size:clamp(9px,1.4vw,12px)!important;letter-spacing:1px!important;opacity:0.6;}
+    #canvas-wrap{position:relative;width:100%;line-height:0;}
+    canvas{display:block;width:100%;height:auto;border-bottom:2px solid var(--fg);image-rendering:pixelated;cursor:pointer;transition:border-color 0.4s;}
+    #tip{font-size:clamp(8px,1.2vw,11px);letter-spacing:1.5px;color:var(--ui);opacity:0.55;margin:5px 2px 0;text-align:center;transition:color 0.4s;}
+    .bonus-pop{position:absolute;font-family:'Courier New',monospace;font-weight:bold;font-size:clamp(11px,1.8vw,15px);letter-spacing:2px;pointer-events:none;white-space:nowrap;color:var(--fg);animation:floatUp 1.1s ease-out forwards;z-index:10;}
+    .bonus-pop.miss{font-size:clamp(9px,1.4vw,12px);}.bonus-pop.speed{font-size:clamp(9px,1.3vw,12px);opacity:0.85;}
+    @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}35%{opacity:1;transform:translateY(-16px) scale(1.18);}100%{opacity:0;transform:translateY(-50px) scale(0.88);}}
+    #ad-section{width:100%;max-width:900px;margin:14px 0 24px;padding:0 12px;display:flex;flex-direction:column;gap:6px;}
+    #ad-label{font-size:9px;letter-spacing:2px;color:var(--ui);opacity:0.3;text-transform:uppercase;}
+    .ad-slot{width:100%;min-height:90px;border:1px solid rgba(83,83,83,0.13);border-radius:2px;display:flex;align-items:center;justify:center;position:relative;overflow:hidden;}
+    body.night .ad-slot{border-color:rgba(202,202,202,0.08);}
+    ins.adsbygoogle{display:block;width:100%;}
+    #ad-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:2px;color:var(--ui);opacity:0.18;pointer-events:none;font-family:'Courier New',monospace;}
   </style>
 </head>
 <body>
-
 <div id="game-container">
   <div id="hud">
-    <div id="hud-left">
-      <span id="hi">HI 00000</span>
-    </div>
-    <div id="hud-center">
-      <span id="sc">00000</span>
-    </div>
-    <div id="hud-right">
-      <span id="speed-display">SPD LV.1</span>
-    </div>
+    <div id="hud-left"><span id="hi">HI 00000</span></div>
+    <div id="hud-center"><span id="sc">00000</span></div>
+    <div id="hud-right"><span id="speed-display">SPD LV.1</span></div>
   </div>
-  <div id="canvas-wrap">
-    <canvas id="c" width="800" height="400"></canvas>
-  </div>
-  <div id="tip">SPACE / ENTER — FLAP &amp; RESTART &nbsp;·&nbsp; +50 PIPE &nbsp;·&nbsp; +100 NEAR MISS &nbsp;·&nbsp; 🔥 STREAK EVERY 5 PIPES &nbsp;·&nbsp; ⚡ SPEED UP EVERY 1000 PTS</div>
+  <div id="canvas-wrap"><canvas id="c" width="800" height="400"></canvas></div>
+  <div id="tip">SPACE / ENTER — FLAP &amp; RESTART · +50 PIPE · +100 NEAR MISS · 🔥 STREAK EVERY 5 PIPES · ⚡ SPEED UP EVERY 1000 PTS</div>
 </div>
-
 <div id="ad-section">
   <div id="ad-label">Advertisement</div>
   <div class="ad-slot">
-   
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
-         data-ad-slot="XXXXXXXXXX"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     <div id="ad-fallback">[ ADVERTISEMENT ]</div>
   </div>
 </div>
-
 <script>
-const canvas = document.getElementById('c');
-const ctx    = canvas.getContext('2d');
-const W = 800, H = 400;
-const GROUND_Y        = H - 50;
-const PIPE_W          = 52;
-const GAP             = 150;
-const PIPE_SPEED_BASE = 3.2;
-const GRAVITY         = 0.42;
-const FLAP_V          = -7.8;
-const BIRD_X          = 130;
-const SPEED_PER_PTS   = 1000;   
-const DAY_NIGHT_PTS   = 150;    
-
-let isNight = false;
-const DAY_BG = '#f7f7f7', DAY_FG = '#535353';
-const NGT_BG = '#1a1a2e', NGT_FG = '#cacaca';
-function fg()   { return isNight ? NGT_FG : DAY_FG; }
-function bg()   { return isNight ? NGT_BG : DAY_BG; }
-function fga(a) { return isNight ? `rgba(202,202,202,${a})` : `rgba(83,83,83,${a})`; }
-
-const AC = new (window.AudioContext || window.webkitAudioContext)();
-function tone(freq, dur, type='square', vol=0.07) {
-  try {
-    const o=AC.createOscillator(), g=AC.createGain();
-    o.connect(g); g.connect(AC.destination);
-    o.type=type; o.frequency.value=freq;
-    g.gain.setValueAtTime(vol,AC.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+dur);
-    o.start(); o.stop(AC.currentTime+dur);
-  } catch(e){}
-}
-const sfxFlap  = () => tone(520,0.09,'square',0.06);
-const sfxScore = () => { tone(880,0.05,'sine',0.07); setTimeout(()=>tone(1100,0.05,'sine',0.07),60); };
-const sfxDie   = () => { tone(200,0.18,'sawtooth',0.10); setTimeout(()=>tone(140,0.25,'sawtooth',0.08),120); };
-const sfxHit   = () => tone(160,0.10,'square',0.10);
-const sfxMiss  = () => { tone(1320,0.04,'sine',0.08); setTimeout(()=>tone(1760,0.06,'sine',0.08),50); };
-const sfxSpeed = () => { tone(300,0.06,'square',0.08); setTimeout(()=>tone(440,0.12,'square',0.08),80); };
-
-let state = 'idle';
-let score = 0;
-let hiScore = parseFloat(localStorage.getItem('flappySaurus_hi') || '0');
-let frameN=0, pipeSpeed=PIPE_SPEED_BASE, speedLevel=1;
-let blinkOn=true, blinkT=0, deathTimer=0;
-let scoreFlash=0, scoreFlashLabel='';
-let lastMilestone=0, pipesCleared=0;
-const canvasWrap = document.getElementById('canvas-wrap');
-function spawnPop(text, cls, logX, logY) {
-  const scale = canvas.getBoundingClientRect().width / W;
-  const el = document.createElement('div');
-  el.className = `bonus-pop ${cls}`;
-  el.textContent = text;
-  el.style.left = (logX * scale) + 'px';
-  el.style.top  = (logY * scale) + 'px';
-  canvasWrap.appendChild(el);
-  el.addEventListener('animationend', () => el.remove());
-}
-
-function px(x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(Math.round(x),Math.round(y),w,h); }
-
-const bird = {
-  x:BIRD_X, y:H/2-20, vy:0, angle:0,
-  dead:false, wingFrame:0, wingTick:0, flapAnim:0,
-  reset(){ this.y=H/2-20;this.vy=0;this.angle=0;this.dead=false;this.wingFrame=0;this.wingTick=0;this.flapAnim=0; },
-  flap(){ this.vy=FLAP_V; this.flapAnim=12; sfxFlap(); },
-  update(){
-    this.vy+=GRAVITY; this.y+=this.vy;
-    const t=Math.max(-0.42,Math.min(Math.PI/2.2,this.vy*0.058));
-    this.angle+=(t-this.angle)*0.18;
-    if(this.flapAnim>0){this.flapAnim--;this.wingFrame=0;}
-    else{this.wingTick++;if(this.wingTick>8){this.wingFrame=(this.wingFrame+1)%3;this.wingTick=0;}}
-    if(this.y<10){this.y=10;this.vy=0;}
-  },
-  hitbox(){ return {x:this.x-9,y:this.y-9,w:18,h:18}; }
-};
-
-function drawBird(){
-  ctx.save();
-  ctx.translate(Math.round(bird.x),Math.round(bird.y));
-  ctx.rotate(bird.angle);
-  const C=bird.dead?'#cc0000':fg(), BG=bg();
-  px(-11,-8,22,16,C); px(-13,-4,26,8,C); px(-10,-10,20,4,C); px(-10,6,20,4,C);
-  px(-6,-4,10,8,BG); px(-5,-5,8,2,BG);
-  px(10,-3,8,3,C); px(10,0,7,3,C); px(14,-1,3,2,BG);
-  if(bird.dead){
-    px(4,-7,2,8,BG); px(2,-7,8,2,C); px(2,-1,8,2,C); px(2,-7,2,8,C); px(8,-7,2,8,C);
-  }else{
-    px(3,-7,8,8,BG); px(5,-5,4,4,C); px(6,-6,2,2,BG);
-  }
-  if(bird.wingFrame===0){px(-10,-14,16,6,C);px(-8,-12,14,4,C);px(-6,-16,10,4,C);}
-  else if(bird.wingFrame===1){px(-12,-6,16,4,C);px(-10,-8,14,4,C);}
-  else{px(-12,4,16,6,C);px(-9,6,14,4,C);px(-6,8,10,4,C);}
-  px(-14,-2,4,10,C); px(-16,0,4,6,C); px(-18,1,4,4,C);
-  ctx.restore();
-}
-
-let pipes=[], pipeTimer=0, nextPipeIn=120;
-function spawnPipe(){
-  const minTop=50,maxTop=GROUND_Y-GAP-50;
-  pipes.push({x:W+10,gapTop:minTop+Math.floor(Math.random()*(maxTop-minTop)),scored:false});
-}
-function drawPipe(p){
-  const C=fg(),capH=24,capW=PIPE_W+10,capX=p.x-5;
-  if(p.gapTop>0){
-    px(p.x,0,PIPE_W,p.gapTop,C);
-    px(capX,p.gapTop-capH,capW,capH,C);
-    px(p.x+6,0,4,p.gapTop-capH,bg()); px(p.x+PIPE_W-10,0,4,p.gapTop-capH,bg());
-    px(capX+4,p.gapTop-capH+4,capW-8,4,bg());
-  }
-  const botY=p.gapTop+GAP,botH=GROUND_Y-botY;
-  if(botH>0){
-    px(p.x,botY,PIPE_W,botH,C);
-    px(capX,botY,capW,capH,C);
-    px(p.x+6,botY+capH,4,botH-capH,bg()); px(p.x+PIPE_W-10,botY+capH,4,botH-capH,bg());
-    px(capX+4,botY+4,capW-8,4,bg());
-    px(p.x-2,GROUND_Y-4,PIPE_W+4,4,C);
-  }
-}
-
-const MTN_PEAKS=[
-  {x:0,h:76},{x:55,h:108},{x:125,h:62},{x:195,h:128},{x:285,h:88},
-  {x:355,h:118},{x:435,h:72},{x:505,h:102},{x:585,h:85},{x:655,h:115},
-  {x:725,h:68},{x:795,h:98},{x:865,h:82},{x:940,h:112}
-];
-let mtnOff=0;
-function drawMountains(){
-  const range=1020;
-  ctx.fillStyle=fga(0.07);
-  ctx.beginPath(); ctx.moveTo(0,GROUND_Y);
-  for(let i=0;i<MTN_PEAKS.length;i++){
-    const m=MTN_PEAKS[i],mn=MTN_PEAKS[(i+1)%MTN_PEAKS.length];
-    const x=((m.x-mtnOff)%range+range)%range-80;
-    const nx=((mn.x-mtnOff)%range+range)%range-80;
-    ctx.lineTo(x,GROUND_Y-m.h);
-    ctx.lineTo((x+nx)/2,GROUND_Y-Math.min(m.h,mn.h)*0.12);
-  }
-  ctx.lineTo(W,GROUND_Y); ctx.closePath(); ctx.fill();
-}
-
+const canvas=document.getElementById('c'), ctx=canvas.getContext('2d'), W=800, H=400, GROUND_Y=H-50, PIPE_W=52, GAP=150, PIPE_SPEED_BASE=3.2, GRAVITY=0.42, FLAP_V=-7.8, BIRD_X=130, SPEED_PER_PTS=1500, DAY_NIGHT_PTS=1500;
+let isNight=false, state='idle', score=0, hiScore=parseFloat(localStorage.getItem('flappySaurus_hi')||'0'), frameN=0, pipeSpeed=PIPE_SPEED_BASE, speedLevel=1, blinkOn=true, blinkT=0, deathTimer=0, scoreFlash=0, scoreFlashLabel='', lastMilestone=0, pipesCleared=0;
+const AC=new(window.AudioContext||window.webkitAudioContext)();
+const tone=(f,d,t='square',v=0.07)=>{try{const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+d);o.start();o.stop(AC.currentTime+d);}catch(e){}};
+const sfxFlap=()=>tone(520,0.09), sfxScore=()=>{tone(880,0.05,'sine');setTimeout(()=>tone(1100,0.05,'sine'),60)}, sfxDie=()=>{tone(200,0.18,'sawtooth',0.1);setTimeout(()=>tone(140,0.25,'sawtooth',0.08),120)}, sfxHit=()=>tone(160,0.1), sfxMiss=()=>{tone(1320,0.04,'sine');setTimeout(()=>tone(1760,0.06,'sine'),50)}, sfxSpeed=()=>{tone(300,0.06);setTimeout(()=>tone(440,0.12),80)};
+const fg=()=>isNight?'#cacaca':'#535353', bg=()=>isNight?'#1a1a2e':'#f7f7f7', fga=(a)=>isNight?`rgba(202,202,202,${a})`:`rgba(83,83,83,${a})`;
+const canvasWrap=document.getElementById('canvas-wrap');
+function spawnPop(t,c,lx,ly){const s=canvas.getBoundingClientRect().width/W,el=document.createElement('div');el.className=`bonus-pop ${c}`;el.textContent=t;el.style.left=(lx*s)+'px';el.style.top=(ly*s)+'px';canvasWrap.appendChild(el);el.addEventListener('animationend',()=>el.remove());}
+function px(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h);}
+const bird={x:BIRD_X,y:H/2-20,vy:0,angle:0,dead:false,wingFrame:0,wingTick:0,flapAnim:0,reset(){this.y=H/2-20;this.vy=0;this.angle=0;this.dead=false;this.wingFrame=0;this.wingTick=0;this.flapAnim=0;},flap(){this.vy=FLAP_V;this.flapAnim=12;sfxFlap();},update(){this.vy+=GRAVITY;this.y+=this.vy;const t=Math.max(-0.42,Math.min(Math.PI/2.2,this.vy*0.058));this.angle+=(t-this.angle)*0.18;if(this.flapAnim>0){this.flapAnim--;this.wingFrame=0;}else{this.wingTick++;if(this.wingTick>8){this.wingFrame=(this.wingFrame+1)%3;this.wingTick=0;}}if(this.y<10){this.y=10;this.vy=0;}},hitbox(){return{x:this.x-9,y:this.y-9,w:18,h:18}}};
+function drawBird(){ctx.save();ctx.translate(Math.round(bird.x),Math.round(bird.y));ctx.rotate(bird.angle);const C=bird.dead?'#cc0000':fg(),BG=bg();px(-11,-8,22,16,C);px(-13,-4,26,8,C);px(-10,-10,20,4,C);px(-10,6,20,4,C);px(-6,-4,10,8,BG);px(-5,-5,8,2,BG);px(10,-3,8,3,C);px(10,0,7,3,C);px(14,-1,3,2,BG);if(bird.dead){px(4,-7,2,8,BG);px(2,-7,8,2,C);px(2,-1,8,2,C);px(2,-7,2,8,C);px(8,-7,2,8,C);}else{px(3,-7,8,8,BG);px(5,-5,4,4,C);px(6,-6,2,2,BG);}if(bird.wingFrame===0){px(-10,-14,16,6,C);px(-8,-12,14,4,C);px(-6,-16,10,4,C);}else if(bird.wingFrame===1){px(-12,-6,16,4,C);px(-10,-8,14,4,C);}else{px(-12,4,16,6,C);px(-9,6,14,4,C);px(-6,8,10,4,C);}px(-14,-2,4,10,C);px(-16,0,4,6,C);px(-18,1,4,4,C);ctx.restore();}
+let pipes=[],pipeTimer=0,nextPipeIn=120;
+function spawnPipe(){const minT=50,maxT=GROUND_Y-GAP-50;pipes.push({x:W+10,gapTop:minT+Math.floor(Math.random()*(maxT-minT)),scored:false});}
+function drawPipe(p){const C=fg(),cH=24,cW=PIPE_W+10,cX=p.x-5;if(p.gapTop>0){px(p.x,0,PIPE_W,p.gapTop,C);px(cX,p.gapTop-cH,cW,cH,C);px(p.x+6,0,4,p.gapTop-cH,bg());px(p.x+PIPE_W-10,0,4,p.gapTop-cH,bg());px(cX+4,p.gapTop-cH+4,cW-8,4,bg());}const bY=p.gapTop+GAP,bH=GROUND_Y-bY;if(bH>0){px(p.x,bY,PIPE_W,bH,C);px(cX,bY,cW,cH,C);px(p.x+6,bY+cH,4,bH-cH,bg());px(p.x+PIPE_W-10,bY+cH,4,bH-cH,bg());px(cX+4,bY+4,cW-8,4,bg());px(p.x-2,GROUND_Y-4,PIPE_W+4,4,C);}}
+const MTN_PEAKS=[{x:0,h:76},{x:55,h:108},{x:125,h:62},{x:195,h:128},{x:285,h:88},{x:355,h:118},{x:435,h:72},{x:505,h:102},{x:585,h:85},{x:655,h:115},{x:725,h:68},{x:795,h:98},{x:865,h:82},{x:940,h:112}];
+let mtnOff=0,hillOff=0,clouds=[],stars=[],celestialX=W*0.82;
+function drawMountains(){const r=1020;ctx.fillStyle=fga(0.07);ctx.beginPath();ctx.moveTo(0,GROUND_Y);for(let i=0;i<MTN_PEAKS.length;i++){const m=MTN_PEAKS[i],mn=MTN_PEAKS[(i+1)%MTN_PEAKS.length],x=((m.x-mtnOff)%r+r)%r-80,nx=((mn.x-mtnOff)%r+r)%r-80;ctx.lineTo(x,GROUND_Y-m.h);ctx.lineTo((x+nx)/2,GROUND_Y-Math.min(m.h,mn.h)*0.12);}ctx.lineTo(W,GROUND_Y);ctx.closePath();ctx.fill();}
 const HILL_DEFS=[{x:0,r:115},{x:170,r:88},{x:320,r:130},{x:490,r:97},{x:630,r:122},{x:775,r:92},{x:920,r:108}];
-let hillOff=0;
-function drawHills(){
-  ctx.fillStyle=fga(0.08);
-  HILL_DEFS.forEach(h=>{
-    const x=((h.x-hillOff)%1050+1050)%1050-100;
-    ctx.beginPath(); ctx.ellipse(x,GROUND_Y+6,h.r,h.r*0.55,0,Math.PI,0); ctx.fill();
-  });
-}
-
-let clouds=[];
-function initClouds(){
-  clouds=[];
-  for(let i=0;i<6;i++) clouds.push({x:Math.random()*W,y:16+Math.random()*80,w:55+Math.random()*70,spd:0.22+Math.random()*0.35});
-}
-function drawClouds(){
-  clouds.forEach(cl=>{
-    ctx.fillStyle=fga(isNight?0.10:0.15);
-    ctx.beginPath();
-    ctx.ellipse(cl.x+cl.w*0.5,cl.y+10,cl.w*0.5,10,0,0,Math.PI*2);
-    ctx.ellipse(cl.x+cl.w*0.28,cl.y+14,cl.w*0.22,8,0,0,Math.PI*2);
-    ctx.ellipse(cl.x+cl.w*0.72,cl.y+12,cl.w*0.20,7,0,0,Math.PI*2);
-    ctx.fill();
-  });
-}
-
-let stars=[];
-function initStars(){
-  stars=[];
-  for(let i=0;i<44;i++) stars.push({x:Math.random()*W,y:8+Math.random()*(GROUND_Y-110),phase:Math.random()*Math.PI*2,sz:Math.random()>0.55?2:1.5});
-}
-function drawStars(){
-  stars.forEach(s=>{
-    s.phase+=0.03;
-    const a=(0.35+0.65*Math.sin(s.phase))*0.88;
-    ctx.fillStyle=`rgba(202,202,202,${a.toFixed(2)})`;
-    ctx.fillRect(s.x,s.y,s.sz,s.sz);
-  });
-}
-
-let celestialX=W*0.82;
-function drawCelestial(){
-  if(isNight){
-    ctx.fillStyle=NGT_FG;
-    ctx.beginPath();ctx.arc(celestialX,55,18,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=NGT_BG;
-    ctx.beginPath();ctx.arc(celestialX+6,50,14,0,Math.PI*2);ctx.fill();
-    [[celestialX+28,44],[celestialX+22,70],[celestialX-20,67]].forEach(([sx,sy])=>{
-      ctx.fillStyle='rgba(202,202,202,0.7)';
-      ctx.fillRect(sx-1,sy-1,3,3);ctx.fillRect(sx,sy-2,1,5);ctx.fillRect(sx-2,sy,5,1);
-    });
-  }else{
-    ctx.fillStyle=DAY_FG;
-    ctx.beginPath();ctx.arc(celestialX,55,14,0,Math.PI*2);ctx.fill();
-    for(let a=0;a<Math.PI*2;a+=Math.PI/4)
-      ctx.fillRect(celestialX+Math.cos(a)*18-1,55+Math.sin(a)*18-1,3,3);
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  JUNGLE TREES  (like dino cacti — spaced, rooted on ground, dino pixel art)
-//  These scroll as BG decoration, spaced with gaps like cactus obstacles.
-// ══════════════════════════════════════════════════════════════════════════════
-
-// Each tree is a fixed BG element that scrolls at a parallax speed.
-// We spawn them in two layers: far (faint, slow) and mid (clearer, faster).
-
-function drawSingleTree(x, baseY, h, variant, alpha){
-  ctx.fillStyle = fga(alpha);
-  const t = Math.round(x);
-  const top = baseY - h;
-
-  if(variant===0){
-    // ── PALM: straight trunk with fanned fronds ────────────────────────────
-    // trunk (3px wide, slight lean)
-    for(let y=0;y<h;y++){
-      const lean=Math.round(Math.sin(y/h*Math.PI)*4);
-      ctx.fillRect(t+lean,top+y,3,1);
-    }
-    // 6 fronds radiating from crown
-    const cx=t+4, cy=top+5;
-    [[-12,-10],[-6,-14],[1,-15],[8,-11],[13,-5],[-14,-2]].forEach(([fx,fy])=>{
-      const steps=10;
-      for(let s=0;s<=steps;s++){
-        const r=s/steps;
-        const lx=cx+fx*r+Math.sin(r*Math.PI)*Math.sign(fx)*3;
-        const ly=cy+fy*r;
-        ctx.fillRect(Math.round(lx),Math.round(ly),3,2);
-      }
-    });
-
-  }else if(variant===1){
-    // ── ROUND CANOPY: straight trunk, 3-blob treetop ──────────────────────
-    px(t-2,top+h*0.42,5,h*0.58,fga(alpha));
-    const r=h*0.28;
-    ctx.fillStyle=fga(alpha);
-    ctx.beginPath(); ctx.ellipse(t+1,top+h*0.25,r,r*0.82,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=fga(alpha);
-    ctx.beginPath(); ctx.ellipse(t-r*0.5,top+h*0.38,r*0.60,r*0.55,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=fga(alpha);
-    ctx.beginPath(); ctx.ellipse(t+r*0.55,top+h*0.40,r*0.55,r*0.50,0,0,Math.PI*2); ctx.fill();
-
-  }else if(variant===2){
-    // ── LAYERED JUNGLE: cactus-disc stacked canopy ────────────────────────
-    px(t-2,top+h*0.22,5,h*0.78,fga(alpha));
-    [[0.06,0.26],[0.28,0.32],[0.50,0.38]].forEach(([yf,wf])=>{
-      ctx.fillStyle=fga(alpha);
-      ctx.beginPath(); ctx.ellipse(t+1,top+h*yf,h*wf/2,h*0.14,0,0,Math.PI*2); ctx.fill();
-    });
-
-  }else{
-    // ── BAMBOO: thin trunk, leaf nodes, top puff ──────────────────────────
-    px(t-1,top,3,h,fga(alpha));
-    for(let n=0.2;n<0.92;n+=0.22){
-      ctx.fillStyle=fga(alpha);
-      ctx.beginPath(); ctx.ellipse(t+1,top+h*n,7,3,0,0,Math.PI*2); ctx.fill();
-    }
-    ctx.fillStyle=fga(alpha);
-    ctx.beginPath(); ctx.ellipse(t+1,top+3,10,7,0,0,Math.PI*2); ctx.fill();
-    [[-8,-5],[8,-4],[-6,2]].forEach(([lx,ly])=>{
-      ctx.beginPath(); ctx.ellipse(t+lx,top+ly,6,3,Math.atan2(ly,lx),0,Math.PI*2); ctx.fill();
-    });
-  }
-}
-
-// Tree layers — defined as arrays of {origX, variant, h}
-let treesBack=[], treesMid=[];
-let treeBackOff=0, treeMidOff=0;
-
-// Trees are spaced like cacti: gap between them ~80-200 px
-function initTrees(){
-  treesBack=[];
-  let x=40;
-  while(x<W+300){
-    treesBack.push({origX:x, variant:Math.floor(Math.random()*4), h:40+Math.random()*40});
-    x += 90+Math.random()*150; // cactus-style gap
-  }
-  treesMid=[];
-  x=20;
-  while(x<W+200){
-    treesMid.push({origX:x, variant:Math.floor(Math.random()*4), h:55+Math.random()*55});
-    x += 80+Math.random()*130;
-  }
-}
-
-function drawTreeLayer(arr, offset, rangeW, alpha){
-  arr.forEach(t=>{
-    const totalRange = rangeW + 200;
-    const x=((t.origX - offset % totalRange)+totalRange*3)%totalRange-100;
-    drawSingleTree(x, GROUND_Y, t.h, t.variant, alpha);
-  });
-}
-
-// Near ground bushes
-let bushes=[], bushOff=0;
-function initBushes(){
-  bushes=[];
-  let x=10;
-  while(x<W+200){
-    bushes.push({origX:x, w:12+Math.floor(Math.random()*22), h:7+Math.floor(Math.random()*14), type:Math.random()>0.5?'bush':'fern'});
-    x += 35+Math.random()*80; // smaller gap for ground decor
-  }
-}
-function drawBush(b, bx){
-  const x=Math.round(bx), baseY=GROUND_Y, y=baseY-b.h;
-  ctx.fillStyle=fga(0.28);
-  if(b.type==='bush'){
-    ctx.beginPath();ctx.ellipse(x+b.w*0.50,y+b.h*0.58,b.w*0.50,b.h*0.55,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=fga(0.28);
-    ctx.beginPath();ctx.ellipse(x+b.w*0.20,y+b.h*0.68,b.w*0.34,b.h*0.44,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=fga(0.28);
-    ctx.beginPath();ctx.ellipse(x+b.w*0.80,y+b.h*0.70,b.w*0.30,b.h*0.40,0,0,Math.PI*2);ctx.fill();
-  }else{
-    ctx.strokeStyle=fga(0.22); ctx.lineWidth=1.5;
-    [-1.0,-0.5,0.0,0.5,1.0].forEach(a=>{
-      const len=b.h*0.88;
-      ctx.beginPath();
-      ctx.moveTo(x+b.w/2,baseY);
-      ctx.lineTo(x+b.w/2+Math.sin(a)*len,baseY-Math.cos(a)*len);
-      ctx.stroke();
-      ctx.fillStyle=fga(0.20);
-      ctx.fillRect(Math.round(x+b.w/2+Math.sin(a)*len)-1,Math.round(baseY-Math.cos(a)*len)-1,3,3);
-    });
-  }
-}
-function drawBushes(){
-  const totalRange=W+180;
-  bushes.forEach(b=>{
-    const bx=((b.origX-bushOff%totalRange)+totalRange*3)%totalRange-30;
-    drawBush(b,bx);
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  VOLCANO  (active, smokes, glows, occasional eruption flash)
-// ══════════════════════════════════════════════════════════════════════════════
-const VOLC_X   = 640;   // fixed BG position
-const VOLC_BASE_W = 90;
-const VOLC_H   = 80;
-let volcFrame  = 0;
-let smokeParticles = [];
-let lavaFlash  = 0;      // countdown for eruption glow
-let lavaTimer  = 0;      // countdown to next eruption
-
-function initVolcano(){
-  smokeParticles = [];
-  lavaFlash = 0;
-  lavaTimer = 200 + Math.floor(Math.random()*300);
-}
-
-function spawnSmoke(){
-  smokeParticles.push({
-    x: VOLC_X + (Math.random()-0.5)*10,
-    y: GROUND_Y - VOLC_H - 4,
-    vx: (Math.random()-0.5)*0.6,
-    vy: -(0.4+Math.random()*0.5),
-    life: 80+Math.floor(Math.random()*60),
-    maxLife: 0,
-    r: 5+Math.random()*8
-  });
-  smokeParticles[smokeParticles.length-1].maxLife = smokeParticles[smokeParticles.length-1].life;
-}
-
-function updateVolcano(){
-  volcFrame++;
-  // Smoke every 8 frames
-  if(volcFrame%8===0) spawnSmoke();
-  // eruption
-  lavaTimer--;
-  if(lavaTimer<=0){
-    lavaFlash=30;
-    lavaTimer=250+Math.floor(Math.random()*400);
-    // burst of lava smoke
-    for(let i=0;i<8;i++) spawnSmoke();
-    tone(140,0.3,'sawtooth',0.04);
-  }
-  if(lavaFlash>0) lavaFlash--;
-  // update smoke
-  smokeParticles=smokeParticles.filter(p=>p.life>0);
-  smokeParticles.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy-=0.01; p.life--; });
-}
-
-function drawVolcano(){
-  const vx=VOLC_X, baseY=GROUND_Y, vH=VOLC_H, bW=VOLC_BASE_W;
-
-  // ── Draw mountain body ──────────────────────────────────────────
-  // outer silhouette
-  ctx.fillStyle=fga(0.18);
-  ctx.beginPath();
-  ctx.moveTo(vx-bW/2, baseY);
-  ctx.lineTo(vx-12, baseY-vH);
-  ctx.lineTo(vx+12, baseY-vH);
-  ctx.lineTo(vx+bW/2, baseY);
-  ctx.closePath(); ctx.fill();
-
-  // darker inner shading on right side
-  ctx.fillStyle=fga(0.10);
-  ctx.beginPath();
-  ctx.moveTo(vx+4, baseY-vH);
-  ctx.lineTo(vx+12, baseY-vH);
-  ctx.lineTo(vx+bW/2, baseY);
-  ctx.lineTo(vx+4, baseY);
-  ctx.closePath(); ctx.fill();
-
-  // crater rim (2 angled walls at top)
-  ctx.fillStyle=fga(0.22);
-  px(vx-18, baseY-vH-4, 14, 6, fga(0.22));
-  px(vx+4,  baseY-vH-4, 14, 6, fga(0.22));
-
-  // ── Lava glow inside crater ─────────────────────────────────────
-  if(lavaFlash>0){
-    const gIntensity = lavaFlash/30;
-    ctx.fillStyle=isNight
-      ? `rgba(202,202,202,${(gIntensity*0.55).toFixed(2)})`
-      : `rgba(83,83,83,${(gIntensity*0.35).toFixed(2)})`;
-    ctx.beginPath();
-    ctx.ellipse(vx, baseY-vH, 10, 5, 0, 0, Math.PI*2);
-    ctx.fill();
-    // pixel lava drips
-    ctx.fillStyle=fga(gIntensity*0.4);
-    px(vx-4,baseY-vH,3,4,fga(gIntensity*0.35));
-    px(vx+2,baseY-vH+2,2,6,fga(gIntensity*0.30));
-  }else{
-    // calm glowing ember dot
-    const pulse=(Math.sin(volcFrame*0.06)+1)*0.5;
-    ctx.fillStyle=fga(0.08+pulse*0.06);
-    ctx.beginPath(); ctx.ellipse(vx,baseY-vH,7,4,0,0,Math.PI*2); ctx.fill();
-  }
-
-  // ── Smoke particles ─────────────────────────────────────────────
-  smokeParticles.forEach(p=>{
-    const t=p.life/p.maxLife;
-    const a=t*0.22;
-    ctx.fillStyle=fga(a);
-    ctx.beginPath();
-    ctx.arc(Math.round(p.x),Math.round(p.y),p.r*t,0,Math.PI*2);
-    ctx.fill();
-  });
-}
-
-// Far background birds (day only)
-let bgBirds=[];
-function initBgBirds(){
-  bgBirds=[];
-  for(let i=0;i<7;i++) bgBirds.push({x:Math.random()*W,y:28+Math.random()*75,spd:0.38+Math.random()*0.55,phase:Math.random()*Math.PI*2});
-}
-function drawBgBirds(){
-  if(isNight) return;
-  bgBirds.forEach(b=>{
-    b.phase+=0.07;
-    const wing=Math.sin(b.phase)*2.5;
-    ctx.strokeStyle=fga(0.16); ctx.lineWidth=1.2;
-    ctx.beginPath(); ctx.moveTo(b.x-6,b.y-wing); ctx.lineTo(b.x,b.y); ctx.lineTo(b.x+6,b.y-wing); ctx.stroke();
-  });
-}
-
-// Fireflies (night only)
-let fireflies=[];
-function initFireflies(){
-  fireflies=[];
-  for(let i=0;i<20;i++) fireflies.push({x:Math.random()*W,y:55+Math.random()*(GROUND_Y-100),phase:Math.random()*Math.PI*2,spd:0.18+Math.random()*0.28,dy:(Math.random()-0.5)*0.35});
-}
-function drawFireflies(){
-  if(!isNight) return;
-  fireflies.forEach(f=>{
-    f.phase+=0.055; f.y+=f.dy;
-    if(f.y<45||f.y>GROUND_Y-12) f.dy*=-1;
-    const a=Math.max(0,Math.sin(f.phase));
-    ctx.fillStyle=`rgba(202,202,202,${(a*0.72).toFixed(2)})`;
-    ctx.fillRect(Math.round(f.x),Math.round(f.y),2,2);
-    ctx.fillStyle=`rgba(202,202,202,${(a*0.16).toFixed(2)})`;
-    ctx.fillRect(Math.round(f.x)-1,Math.round(f.y)-1,4,4);
-  });
-}
-
-// Ground
-let groundOffset=0, groundSegs=[];
-function initGround(){
-  groundSegs=[];
-  for(let i=0;i<8;i++) groundSegs.push({x:i*130,variant:i%4});
-}
-function drawGround(){
-  ctx.fillStyle=fg(); ctx.fillRect(0,GROUND_Y,W,2); ctx.fillRect(0,GROUND_Y+2,W,H-GROUND_Y-2);
-  ctx.fillStyle=bg();
-  groundSegs.forEach(s=>{
-    const bx=((s.x-groundOffset)%(W+130)+W+130)%(W+130)-130;
-    if(s.variant===0){for(let i=0;i<5;i++) ctx.fillRect(bx+i*14,GROUND_Y+5,6,2);}
-    else if(s.variant===1){ctx.fillRect(bx+8,GROUND_Y+4,24,2);ctx.fillRect(bx+44,GROUND_Y+7,14,2);}
-    else if(s.variant===2){ctx.fillRect(bx+4,GROUND_Y+5,8,2);ctx.fillRect(bx+20,GROUND_Y+4,4,2);ctx.fillRect(bx+34,GROUND_Y+7,10,2);}
-    else{for(let i=0;i<4;i++) ctx.fillRect(bx+i*20+6,GROUND_Y+5,3,3);}
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  PARTICLES
-// ══════════════════════════════════════════════════════════════════════════════
+function drawHills(){ctx.fillStyle=fga(0.08);HILL_DEFS.forEach(h=>{const x=((h.x-hillOff)%1050+1050)%1050-100;ctx.beginPath();ctx.ellipse(x,GROUND_Y+6,h.r,h.r*0.55,0,Math.PI,0);ctx.fill();});}
+function initClouds(){clouds=[];for(let i=0;i<6;i++)clouds.push({x:Math.random()*W,y:16+Math.random()*80,w:55+Math.random()*70,spd:0.22+Math.random()*0.35});}
+function drawClouds(){clouds.forEach(cl=>{ctx.fillStyle=fga(isNight?0.1:0.15);ctx.beginPath();ctx.ellipse(cl.x+cl.w*0.5,cl.y+10,cl.w*0.5,10,0,0,Math.PI*2);ctx.ellipse(cl.x+cl.w*0.28,cl.y+14,cl.w*0.22,8,0,0,Math.PI*2);ctx.ellipse(cl.x+cl.w*0.72,cl.y+12,cl.w*0.2,7,0,0,Math.PI*2);ctx.fill();});}
+function initStars(){stars=[];for(let i=0;i<44;i++)stars.push({x:Math.random()*W,y:8+Math.random()*(GROUND_Y-110),phase:Math.random()*Math.PI*2,sz:Math.random()>0.55?2:1.5});}
+function drawStars(){stars.forEach(s=>{s.phase+=0.03;const a=(0.35+0.65*Math.sin(s.phase))*0.88;ctx.fillStyle=`rgba(202,202,202,${a.toFixed(2)})`;ctx.fillRect(s.x,s.y,s.sz,s.sz);});}
+function drawCelestial(){if(isNight){ctx.fillStyle='#cacaca';ctx.beginPath();ctx.arc(celestialX,55,18,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.arc(celestialX+6,50,14,0,Math.PI*2);ctx.fill();}else{ctx.fillStyle='#535353';ctx.beginPath();ctx.arc(celestialX,55,14,0,Math.PI*2);ctx.fill();for(let a=0;a<Math.PI*2;a+=Math.PI/4)ctx.fillRect(celestialX+Math.cos(a)*18-1,55+Math.sin(a)*18-1,3,3);}}
+function drawSingleTree(x,baseY,h,variant,alpha){ctx.fillStyle=fga(alpha);const t=Math.round(x),top=baseY-h;if(variant===0){for(let y=0;y<h;y++){const l=Math.round(Math.sin(y/h*Math.PI)*4);ctx.fillRect(t+l,top+y,3,1);}const cx=t+4,cy=top+5;[[-12,-10],[-6,-14],[1,-15],[8,-11],[13,-5],[-14,-2]].forEach(([fx,fy])=>{for(let s=0;s<=10;s++){const r=s/10;ctx.fillRect(Math.round(cx+fx*r+Math.sin(r*Math.PI)*Math.sign(fx)*3),Math.round(cy+fy*r),3,2);}});}else if(variant===1){px(t-2,top+h*0.42,5,h*0.58,fga(alpha));const r=h*0.28;ctx.beginPath();ctx.ellipse(t+1,top+h*0.25,r,r*0.82,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(t-r*0.5,top+h*0.38,r*0.6,r*0.55,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(t+r*0.55,top+h*0.4,r*0.55,r*0.5,0,0,Math.PI*2);ctx.fill();}else if(variant===2){px(t-2,top+h*0.22,5,h*0.78,fga(alpha));[[0.06,0.26],[0.28,0.32],[0.5,0.38]].forEach(([yf,wf])=>{ctx.beginPath();ctx.ellipse(t+1,top+h*yf,h*wf/2,h*0.14,0,0,Math.PI*2);ctx.fill();});}else{px(t-1,top,3,h,fga(alpha));for(let n=0.2;n<0.92;n+=0.22){ctx.beginPath();ctx.ellipse(t+1,top+h*n,7,3,0,0,Math.PI*2);ctx.fill();}ctx.beginPath();ctx.ellipse(t+1,top+3,10,7,0,0,Math.PI*2);ctx.fill();[[-8,-5],[8,-4],[-6,2]].forEach(([lx,ly])=>{ctx.beginPath();ctx.ellipse(t+lx,top+ly,6,3,Math.atan2(ly,lx),0,Math.PI*2);ctx.fill();});}}
+let treesBack=[],treesMid=[],treeBackOff=0,treeMidOff=0,bushes=[],bushOff=0;
+function initTrees(){treesBack=[];let x=40;while(x<W+300){treesBack.push({origX:x,variant:Math.floor(Math.random()*4),h:40+Math.random()*40});x+=90+Math.random()*150;}treesMid=[];x=20;while(x<W+200){treesMid.push({origX:x,variant:Math.floor(Math.random()*4),h:55+Math.random()*55});x+=80+Math.random()*130;}}
+function drawTreeLayer(arr,offset,rangeW,alpha){arr.forEach(t=>{const tr=rangeW+200,x=((t.origX-offset%tr)+tr*3)%tr-100;drawSingleTree(x,GROUND_Y,t.h,t.variant,alpha);});}
+function initBushes(){bushes=[];let x=10;while(x<W+200){bushes.push({origX:x,w:12+Math.floor(Math.random()*22),h:7+Math.floor(Math.random()*14),type:Math.random()>0.5?'bush':'fern'});x+=35+Math.random()*80;}}
+function drawBush(b,bx){const x=Math.round(bx),baseY=GROUND_Y,y=baseY-b.h;ctx.fillStyle=fga(0.28);if(b.type==='bush'){ctx.beginPath();ctx.ellipse(x+b.w*0.5,y+b.h*0.58,b.w*0.5,b.h*0.55,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(x+b.w*0.2,y+b.h*0.68,b.w*0.34,b.h*0.44,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(x+b.w*0.8,y+b.h*0.7,b.w*0.3,b.h*0.4,0,0,Math.PI*2);ctx.fill();}else{ctx.strokeStyle=fga(0.22);ctx.lineWidth=1.5;[-1,-0.5,0,0.5,1].forEach(a=>{const len=b.h*0.88;ctx.beginPath();ctx.moveTo(x+b.w/2,baseY);ctx.lineTo(x+b.w/2+Math.sin(a)*len,baseY-Math.cos(a)*len);ctx.stroke();px(Math.round(x+b.w/2+Math.sin(a)*len)-1,Math.round(baseY-Math.cos(a)*len)-1,3,3,fga(0.2));});}}
+function drawBushes(){const tr=W+180;bushes.forEach(b=>{const bx=((b.origX-bushOff%tr)+tr*3)%tr-30;drawBush(b,bx);});}
+const VOLC_X=640,VOLC_BASE_W=90,VOLC_H=80;
+let volcFrame=0,smokeParticles=[],lavaFlash=0,lavaTimer=0;
+function initVolcano(){smokeParticles=[];lavaFlash=0;lavaTimer=200+Math.floor(Math.random()*300);}
+function spawnSmoke(){smokeParticles.push({x:VOLC_X+(Math.random()-0.5)*10,y:GROUND_Y-VOLC_H-4,vx:(Math.random()-0.5)*0.6,vy:-(0.4+Math.random()*0.5),life:80+Math.floor(Math.random()*60),maxLife:0,r:5+Math.random()*8});smokeParticles[smokeParticles.length-1].maxLife=smokeParticles[smokeParticles.length-1].life;}
+function updateVolcano(){volcFrame++;if(volcFrame%8===0)spawnSmoke();lavaTimer--;if(lavaTimer<=0){lavaFlash=30;lavaTimer=250+Math.floor(Math.random()*400);for(let i=0;i<8;i++)spawnSmoke();tone(140,0.3,'sawtooth',0.04);}if(lavaFlash>0)lavaFlash--;smokeParticles=smokeParticles.filter(p=>p.life>0);smokeParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy-=0.01;p.life--;});}
+function drawVolcano(){const vx=VOLC_X,baseY=GROUND_Y,vH=VOLC_H,bW=VOLC_BASE_W;ctx.fillStyle=fga(0.18);ctx.beginPath();ctx.moveTo(vx-bW/2,baseY);ctx.lineTo(vx-12,baseY-vH);ctx.lineTo(vx+12,baseY-vH);ctx.lineTo(vx+bW/2,baseY);ctx.closePath();ctx.fill();ctx.fillStyle=fga(0.1);ctx.beginPath();ctx.moveTo(vx+4,baseY-vH);ctx.lineTo(vx+12,baseY-vH);ctx.lineTo(vx+bW/2,baseY);ctx.lineTo(vx+4,baseY);ctx.closePath();ctx.fill();px(vx-18,baseY-vH-4,14,6,fga(0.22));px(vx+4,baseY-vH-4,14,6,fga(0.22));if(lavaFlash>0){const g=lavaFlash/30;ctx.fillStyle=fga(g*0.35);ctx.beginPath();ctx.ellipse(vx,baseY-vH,10,5,0,0,Math.PI*2);ctx.fill();px(vx-4,baseY-vH,3,4,fga(g*0.35));px(vx+2,baseY-vH+2,2,6,fga(g*0.3));}else{const p=(Math.sin(volcFrame*0.06)+1)*0.5;ctx.fillStyle=fga(0.08+p*0.06);ctx.beginPath();ctx.ellipse(vx,baseY-vH,7,4,0,0,Math.PI*2);ctx.fill();}smokeParticles.forEach(p=>{const t=p.life/p.maxLife;ctx.fillStyle=fga(t*0.22);ctx.beginPath();ctx.arc(Math.round(p.x),Math.round(p.y),p.r*t,0,Math.PI*2);ctx.fill();});}
+let bgBirds=[],fireflies=[];
+function initBgBirds(){bgBirds=[];for(let i=0;i<7;i++)bgBirds.push({x:Math.random()*W,y:28+Math.random()*75,spd:0.38+Math.random()*0.55,phase:Math.random()*Math.PI*2});}
+function drawBgBirds(){if(isNight)return;bgBirds.forEach(b=>{b.phase+=0.07;const w=Math.sin(b.phase)*2.5;ctx.strokeStyle=fga(0.16);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(b.x-6,b.y-w);ctx.lineTo(b.x,b.y);ctx.lineTo(b.x+6,b.y-w);ctx.stroke();});}
+function initFireflies(){fireflies=[];for(let i=0;i<20;i++)fireflies.push({x:Math.random()*W,y:55+Math.random()*(GROUND_Y-100),phase:Math.random()*Math.PI*2,spd:0.18+Math.random()*0.28,dy:(Math.random()-0.5)*0.35});}
+function drawFireflies(){if(!isNight)return;fireflies.forEach(f=>{f.phase+=0.055;f.y+=f.dy;if(f.y<45||f.y>GROUND_Y-12)f.dy*=-1;const a=Math.max(0,Math.sin(f.phase));ctx.fillStyle=`rgba(202,202,202,${(a*0.72).toFixed(2)})`;ctx.fillRect(Math.round(f.x),Math.round(f.y),2,2);});}
+let groundOffset=0,groundSegs=[];
+function initGround(){groundSegs=[];for(let i=0;i<8;i++)groundSegs.push({x:i*130,variant:i%4});}
+function drawGround(){ctx.fillStyle=fg();ctx.fillRect(0,GROUND_Y,W,2);ctx.fillRect(0,GROUND_Y+2,W,H-GROUND_Y-2);ctx.fillStyle=bg();groundSegs.forEach(s=>{const bx=((s.x-groundOffset)%(W+130)+W+130)%(W+130)-130;if(s.variant===0){for(let i=0;i<5;i++)ctx.fillRect(bx+i*14,GROUND_Y+5,6,2);}else if(s.variant===1){ctx.fillRect(bx+8,GROUND_Y+4,24,2);ctx.fillRect(bx+44,GROUND_Y+7,14,2);}else if(s.variant===2){ctx.fillRect(bx+4,GROUND_Y+5,8,2);ctx.fillRect(bx+20,GROUND_Y+4,4,2);ctx.fillRect(bx+34,GROUND_Y+7,10,2);}else{for(let i=0;i<4;i++)ctx.fillRect(bx+i*20+6,GROUND_Y+5,3,3);}});}
 let particles=[];
-function spawnParticles(count=10){
-  for(let i=0;i<count;i++){
-    particles.push({x:bird.x+(Math.random()-0.5)*30,y:bird.y+(Math.random()-0.5)*20,vx:(Math.random()-0.5)*3.5,vy:-2-Math.random()*2.5,life:30+Math.random()*20});
-  }
-}
-function drawParticles(){
-  particles=particles.filter(p=>p.life>0);
-  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;p.life--;ctx.globalAlpha=Math.min(1,p.life/40);ctx.fillStyle=fg();ctx.fillRect(p.x,p.y,3,3);});
-  ctx.globalAlpha=1;
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  HUD
-// ══════════════════════════════════════════════════════════════════════════════
-function updateHUD(){
-  document.getElementById('sc').textContent=String(Math.floor(score)).padStart(5,'0');
-  document.getElementById('hi').textContent='HI '+String(Math.floor(hiScore)).padStart(5,'0');
-  document.getElementById('speed-display').textContent=`SPD LV.${speedLevel}`;
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  COLLISION
-// ══════════════════════════════════════════════════════════════════════════════
-function checkCollision(){
-  const hb=bird.hitbox();
-  if(bird.y+11>=GROUND_Y) return true;
-  for(const p of pipes){
-    const capX=p.x-5,capW=PIPE_W+10;
-    if(hb.x+hb.w>capX&&hb.x<capX+capW) if(hb.y<p.gapTop||hb.y+hb.h>p.gapTop+GAP) return true;
-    if(hb.x+hb.w>p.x&&hb.x<p.x+PIPE_W) if(hb.y<p.gapTop-24||hb.y+hb.h>p.gapTop+GAP+24) return true;
-  }
-  return false;
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  OVERLAYS
-// ══════════════════════════════════════════════════════════════════════════════
-function cText(text,y,sz,a=1){
-  ctx.globalAlpha=a; ctx.fillStyle=fg(); ctx.font=`bold ${sz}px "Courier New"`;
-  ctx.textAlign='center'; ctx.fillText(text,W/2,y); ctx.textAlign='left'; ctx.globalAlpha=1;
-}
-
-function drawIdleScreen(){
-  cText('FLAPPY  SAURUS',H/2-52,28);
-  cText('DINO  PIXEL  EDITION',H/2-18,15);
-  if(blinkOn){cText('PRESS  SPACE / ENTER  TO  START',H/2+22,14); cText('TAP  CANVAS  ON  MOBILE',H/2+42,12);}
-  ctx.fillStyle=fg();
-  ctx.fillRect(W/2-130,H/2-64,260,2); ctx.fillRect(W/2-110,H/2+54,220,2);
-
-  // reward legend
-  ctx.globalAlpha=0.5; ctx.font='10px "Courier New"'; ctx.textAlign='center';
-  ctx.fillStyle=fg();
-  ctx.fillText('+50 PIPE  ·  +100 NEAR MISS  ·  🔥 STREAK BONUS EVERY 5 PIPES',W/2,H/2+68);
-  ctx.textAlign='left'; ctx.globalAlpha=1;
-}
-
-function drawGameOverScreen(){
-  ctx.fillStyle=fg(); ctx.fillRect(W/2-180,H/2-82,360,165);
-  ctx.fillStyle=bg(); ctx.fillRect(W/2-175,H/2-77,350,155);
-  cText('GAME  OVER',H/2-44,26);
-  ctx.font='13px "Courier New"'; ctx.fillStyle=fg(); ctx.textAlign='center';
-  ctx.fillText(`SCORE  ${String(Math.floor(score)).padStart(5,'0')}   BEST  ${String(Math.floor(hiScore)).padStart(5,'0')}`,W/2,H/2-8);
-  ctx.fillText(`PIPES CLEARED: ${pipesCleared}`,W/2,H/2+14);
-  ctx.fillText(`SPEED REACHED: LV.${speedLevel}`,W/2,H/2+32);
-  ctx.textAlign='left';
-  if(blinkOn) cText('↺  SPACE / ENTER  TO  RETRY',H/2+58,13);
-}
-
-function drawScoreFlash(){
-  if(scoreFlash<=0) return;
-  const a=Math.min(1,scoreFlash/18);
-  ctx.globalAlpha=a; ctx.fillStyle=fg();
-  ctx.font='bold 14px "Courier New"'; ctx.textAlign='center';
-  ctx.fillText(scoreFlashLabel||`SCORE  ${Math.floor(score)}`,W/2,55);
-  ctx.textAlign='left'; ctx.globalAlpha=1;
-  scoreFlash--;
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  REWARD SYSTEM
-// ══════════════════════════════════════════════════════════════════════════════
-function handlePipeScore(p){
-  const NEAR_MISS=22;
-  score+=50; sfxScore();
-  scoreFlash=28; scoreFlashLabel='+50  PIPE  CLEARED';
-  spawnPop('+50','pipe',bird.x-20,bird.y-35);
-  spawnParticles(10);
-
-  // Near-miss bonus
-  const dist=Math.min(bird.y-p.gapTop,(p.gapTop+GAP)-bird.y);
-  if(dist>=0&&dist<=NEAR_MISS){
-    score+=100; sfxMiss();
-    scoreFlash=42; scoreFlashLabel='+100  NEAR MISS!';
-    spawnPop('+100 NEAR MISS!','miss',bird.x-60,bird.y-58);
-    spawnParticles(18);
-  }
-
-  // Streak milestone every 5 pipes
-  if(pipesCleared>0&&pipesCleared%5===0){
-    const streakBonus=pipesCleared*10;
-    score+=streakBonus;
-    tone(660,0.06,'sine',0.09); setTimeout(()=>tone(880,0.07,'sine',0.09),70);
-    spawnPop(`🔥 ${pipesCleared} STREAK! +${streakBonus}`,'pipe',bird.x-80,bird.y-80);
-    spawnParticles(22);
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  LIFECYCLE
-// ══════════════════════════════════════════════════════════════════════════════
-function startGame(){
-  AC.resume();
-  state='running'; score=0; frameN=0;
-  pipeSpeed=PIPE_SPEED_BASE; speedLevel=1;
-  pipes=[]; particles=[]; smokeParticles=[];
-  pipeTimer=0; nextPipeIn=120;
-  celestialX=W*0.82; isNight=false;
-  lastMilestone=0; pipesCleared=0;
-  mtnOff=0; hillOff=0; treeBackOff=0; treeMidOff=0; bushOff=0;
-  document.body.classList.remove('night');
-  document.querySelectorAll('.bonus-pop').forEach(e=>e.remove());
-  bird.reset();
-  initGround(); initClouds(); initVolcano();
-  updateHUD();
-}
-
-function killBird(){
-  if(bird.dead) return;
-  bird.dead=true; state='dead'; deathTimer=0;
-  if(score>hiScore){hiScore=score;localStorage.setItem('flappySaurus_hi',String(hiScore));}
-  sfxHit(); setTimeout(sfxDie,100); updateHUD();
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  UPDATE
-// ══════════════════════════════════════════════════════════════════════════════
-function update(){
-  if(state!=='running') return;
-  frameN++;
-
-  // Speed level: +0.5 per 1000 pts (not continuous)
-  const newSpeedLevel = 1+Math.floor(score/SPEED_PER_PTS);
-  if(newSpeedLevel>speedLevel){
-    speedLevel=newSpeedLevel;
-    pipeSpeed=Math.min(8.5, PIPE_SPEED_BASE+(speedLevel-1)*0.5);
-    sfxSpeed();
-    spawnPop(`⚡ SPD LV.${speedLevel}!`,'speed',W/2-60,H/2-60);
-    spawnParticles(20);
-    updateHUD();
-  }
-
-  // Passive score
-  score+=0.02*(pipeSpeed/PIPE_SPEED_BASE);
-
-  // Day/night: toggle every DAY_NIGHT_PTS points (much longer cycle)
-  const newNight=(Math.floor(score/DAY_NIGHT_PTS)%2===1);
-  if(newNight!==isNight){isNight=newNight;document.body.classList.toggle('night',isNight);}
-
-  // Celestial
-  celestialX-=pipeSpeed*0.12;
-  if(celestialX<-40) celestialX=W+60;
-
-  // Parallax scrolling
-  mtnOff      += pipeSpeed*0.18;
-  hillOff     += pipeSpeed*0.38;
-  treeBackOff += pipeSpeed*0.50;
-  treeMidOff  += pipeSpeed*0.72;
-  bushOff     += pipeSpeed*1.10;
-
-  clouds.forEach(cl=>{
-    cl.x-=cl.spd*(pipeSpeed/PIPE_SPEED_BASE);
-    if(cl.x+cl.w<0){cl.x=W+20;cl.y=16+Math.random()*80;cl.w=55+Math.random()*70;}
-  });
-  bgBirds.forEach(b=>{
-    b.x-=b.spd*(pipeSpeed/PIPE_SPEED_BASE);
-    if(b.x<-15){b.x=W+10;b.y=28+Math.random()*75;}
-  });
-  groundOffset=(groundOffset+pipeSpeed)%(W+130);
-
-  // Pipes
-  pipeTimer++;
-  if(pipeTimer>=nextPipeIn){
-    spawnPipe(); pipeTimer=0;
-    nextPipeIn=Math.max(70,120-Math.floor((speedLevel-1)*10)+Math.floor(Math.random()*30));
-  }
-  pipes.forEach(p=>p.x-=pipeSpeed);
-  pipes=pipes.filter(p=>p.x+PIPE_W+10>-20);
-
-  pipes.forEach(p=>{
-    if(!p.scored&&p.x+PIPE_W<bird.x){
-      p.scored=true; pipesCleared++;
-      handlePipeScore(p);
-    }
-  });
-
-  // Milestone particles every 10 pts
-  const ms=Math.floor(score/10);
-  if(ms>lastMilestone){lastMilestone=ms;spawnParticles(5);}
-
-  updateVolcano();
-  bird.update();
-  if(checkCollision()) killBird();
-  updateHUD();
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  DRAW
-// ══════════════════════════════════════════════════════════════════════════════
-function draw(){
-  ctx.fillStyle=bg(); ctx.fillRect(0,0,W,H);
-
-  // Far layers
-  drawMountains();
-  drawHills();
-  if(isNight) drawStars();
-  drawCelestial();
-  drawVolcano();       // volcano sits in the bg, behind trees
-  drawClouds();
-
-  // Back trees (very faint)
-  drawTreeLayer(treesBack, treeBackOff, W+500, 0.07);
-
-  drawBgBirds();
-  drawFireflies();
-
-  // Mid trees (clearer)
-  drawTreeLayer(treesMid, treeMidOff, W+400, 0.14);
-
-  // Pipes (game objects)
-  pipes.forEach(drawPipe);
-
-  // Near decorations
-  drawBushes();
-  drawGround();
-  drawParticles();
-  drawBird();
-  drawScoreFlash();
-
-  if(state==='idle'){
-    blinkT++; if(blinkT%36===0) blinkOn=!blinkOn;
-    drawIdleScreen();
-  }else if(state==='dead'){
-    deathTimer++; blinkT++; if(blinkT%30===0) blinkOn=!blinkOn;
-    if(deathTimer>30) drawGameOverScreen();
-  }
-}
-
-function loop(){ update(); draw(); requestAnimationFrame(loop); }
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  INPUT
-// ══════════════════════════════════════════════════════════════════════════════
-function onAction(){
-  AC.resume();
-  if(state==='idle'){startGame();return;}
-  if(state==='dead'&&deathTimer>40){startGame();return;}
-  if(state==='running') bird.flap();
-}
+function spawnParticles(c=10){for(let i=0;i<c;i++)particles.push({x:bird.x+(Math.random()-0.5)*30,y:bird.y+(Math.random()-0.5)*20,vx:(Math.random()-0.5)*3.5,vy:-2-Math.random()*2.5,life:30+Math.random()*20});}
+function drawParticles(){particles=particles.filter(p=>p.life>0);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;p.life--;ctx.globalAlpha=Math.min(1,p.life/40);ctx.fillStyle=fg();ctx.fillRect(p.x,p.y,3,3);});ctx.globalAlpha=1;}
+function updateHUD(){document.getElementById('sc').textContent=String(Math.floor(score)).padStart(5,'0');document.getElementById('hi').textContent='HI '+String(Math.floor(hiScore)).padStart(5,'0');document.getElementById('speed-display').textContent=`SPD LV.${speedLevel}`;}
+function checkCollision(){const hb=bird.hitbox();if(bird.y+11>=GROUND_Y)return true;for(const p of pipes){const cX=p.x-5,cW=PIPE_W+10;if(hb.x+hb.w>cX&&hb.x<cX+cW)if(hb.y<p.gapTop||hb.y+hb.h>p.gapTop+GAP)return true;if(hb.x+hb.w>p.x&&hb.x<p.x+PIPE_W)if(hb.y<p.gapTop-24||hb.y+hb.h>p.gapTop+GAP+24)return true;}return false;}
+function cText(t,y,s,a=1){ctx.globalAlpha=a;ctx.fillStyle=fg();ctx.font=`bold ${s}px "Courier New"`;ctx.textAlign='center';ctx.fillText(t,W/2,y);ctx.textAlign='left';ctx.globalAlpha=1;}
+function drawIdleScreen(){cText('FLAPPY  SAURUS',H/2-52,28);cText('DINO  PIXEL  EDITION',H/2-18,15);if(blinkOn){cText('PRESS  SPACE / ENTER  TO  START',H/2+22,14);cText('TAP  CANVAS  ON  MOBILE',H/2+42,12);}ctx.fillStyle=fg();ctx.fillRect(W/2-130,H/2-64,260,2);ctx.fillRect(W/2-110,H/2+54,220,2);ctx.globalAlpha=0.5;ctx.font='10px "Courier New"';ctx.textAlign='center';ctx.fillText('+50 PIPE  ·  +100 NEAR MISS  ·  🔥 STREAK BONUS EVERY 5 PIPES',W/2,H/2+68);ctx.textAlign='left';ctx.globalAlpha=1;}
+function drawGameOverScreen(){ctx.fillStyle=fg();ctx.fillRect(W/2-180,H/2-82,360,165);ctx.fillStyle=bg();ctx.fillRect(W/2-175,H/2-77,350,155);cText('GAME  OVER',H/2-44,26);ctx.font='13px "Courier New"';ctx.fillStyle=fg();ctx.textAlign='center';ctx.fillText(`SCORE  ${String(Math.floor(score)).padStart(5,'0')}   BEST  ${String(Math.floor(hiScore)).padStart(5,'0')}`,W/2,H/2-8);ctx.fillText(`PIPES CLEARED: ${pipesCleared}`,W/2,H/2+14);ctx.fillText(`SPEED REACHED: LV.${speedLevel}`,W/2,H/2+32);ctx.textAlign='left';if(blinkOn)cText('↺  SPACE / ENTER  TO  RETRY',H/2+58,13);}
+function drawScoreFlash(){if(scoreFlash<=0)return;const a=Math.min(1,scoreFlash/18);ctx.globalAlpha=a;ctx.fillStyle=fg();ctx.font='bold 14px "Courier New"';ctx.textAlign='center';ctx.fillText(scoreFlashLabel||`SCORE  ${Math.floor(score)}`,W/2,55);ctx.textAlign='left';ctx.globalAlpha=1;scoreFlash--;}
+function handlePipeScore(p){score+=50;sfxScore();scoreFlash=28;scoreFlashLabel='+50  PIPE  CLEARED';spawnPop('+50','pipe',bird.x-20,bird.y-35);spawnParticles(10);const d=Math.min(bird.y-p.gapTop,(p.gapTop+GAP)-bird.y);if(d>=0&&d<=22){score+=100;sfxMiss();scoreFlash=42;scoreFlashLabel='+100  NEAR MISS!';spawnPop('+100 NEAR MISS!','miss',bird.x-60,bird.y-58);spawnParticles(18);}if(pipesCleared>0&&pipesCleared%5===0){const b=pipesCleared*10;score+=b;tone(660,0.06,'sine',0.09);setTimeout(()=>tone(880,0.07,'sine',0.09),70);spawnPop(`🔥 ${pipesCleared} STREAK! +${b}`,'pipe',bird.x-80,bird.y-80);spawnParticles(22);}}
+function startGame(){AC.resume();state='running';score=0;frameN=0;pipeSpeed=PIPE_SPEED_BASE;speedLevel=1;pipes=[];particles=[];smokeParticles=[];pipeTimer=0;nextPipeIn=120;celestialX=W*0.82;isNight=false;lastMilestone=0;pipesCleared=0;mtnOff=0;hillOff=0;treeBackOff=0;treeMidOff=0;bushOff=0;document.body.classList.remove('night');document.querySelectorAll('.bonus-pop').forEach(e=>e.remove());bird.reset();initGround();initClouds();initVolcano();updateHUD();}
+function killBird(){if(bird.dead)return;bird.dead=true;state='dead';deathTimer=0;if(score>hiScore){hiScore=score;localStorage.setItem('flappySaurus_hi',String(hiScore));}sfxHit();setTimeout(sfxDie,100);updateHUD();}
+function update(){if(state!=='running')return;frameN++;const nL=1+Math.floor(score/SPEED_PER_PTS);if(nL>speedLevel){speedLevel=nL;pipeSpeed=Math.min(8.5,PIPE_SPEED_BASE+(speedLevel-1)*0.5);sfxSpeed();spawnPop(`⚡ SPD LV.${speedLevel}!`,'speed',W/2-60,H/2-60);spawnParticles(20);updateHUD();}score+=0.02*(pipeSpeed/PIPE_SPEED_BASE);const nN=(Math.floor(score/DAY_NIGHT_PTS)%2===1);if(nN!==isNight){isNight=nN;document.body.classList.toggle('night',isNight);}celestialX-=pipeSpeed*0.12;if(celestialX<-40)celestialX=W+60;mtnOff+=pipeSpeed*0.18;hillOff+=pipeSpeed*0.38;treeBackOff+=pipeSpeed*0.5;treeMidOff+=pipeSpeed*0.72;bushOff+=pipeSpeed*1.1;clouds.forEach(cl=>{cl.x-=cl.spd*(pipeSpeed/PIPE_SPEED_BASE);if(cl.x+cl.w<0){cl.x=W+20;cl.y=16+Math.random()*80;cl.w=55+Math.random()*70;}});bgBirds.forEach(b=>{b.x-=b.spd*(pipeSpeed/PIPE_SPEED_BASE);if(b.x<-15){b.x=W+10;b.y=28+Math.random()*75;}});groundOffset=(groundOffset+pipeSpeed)%(W+130);pipeTimer++;if(pipeTimer>=nextPipeIn){spawnPipe();pipeTimer=0;nextPipeIn=Math.max(70,120-Math.floor((speedLevel-1)*10)+Math.floor(Math.random()*30));}pipes.forEach(p=>p.x-=pipeSpeed);pipes=pipes.filter(p=>p.x+PIPE_W+10>-20);pipes.forEach(p=>{if(!p.scored&&p.x+PIPE_W<bird.x){p.scored=true;pipesCleared++;handlePipeScore(p);}});const ms=Math.floor(score/10);if(ms>lastMilestone){lastMilestone=ms;spawnParticles(5);}updateVolcano();bird.update();if(checkCollision())killBird();updateHUD();}
+function draw(){ctx.fillStyle=bg();ctx.fillRect(0,0,W,H);drawMountains();drawHills();if(isNight)drawStars();drawCelestial();drawVolcano();drawClouds();drawTreeLayer(treesBack,treeBackOff,W+500,0.07);drawBgBirds();drawFireflies();drawTreeLayer(treesMid,treeMidOff,W+400,0.14);pipes.forEach(drawPipe);drawBushes();drawGround();drawParticles();drawBird();drawScoreFlash();if(state==='idle'){blinkT++;if(blinkT%36===0)blinkOn=!blinkOn;drawIdleScreen();}else if(state==='dead'){deathTimer++;blinkT++;if(blinkT%30===0)blinkOn=!blinkOn;if(deathTimer>30)drawGameOverScreen();}}
+function loop(){update();draw();requestAnimationFrame(loop);}
+function onAction(){AC.resume();if(state==='idle'){startGame();return;}if(state==='dead'&&deathTimer>40){startGame();return;}if(state==='running')bird.flap();}
 document.addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();onAction();}});
 canvas.addEventListener('pointerdown',e=>{e.preventDefault();onAction();});
-
-// Ad fallback hide
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
-    const ins=document.querySelector('ins.adsbygoogle');
-    if(ins&&ins.getAttribute('data-ad-status')==='filled'){const fb=document.getElementById('ad-fallback');if(fb)fb.style.display='none';}
-  },2500);
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════════════════════════════
-initGround(); initClouds(); initStars();
-initTrees(); initBushes();
-initBgBirds(); initFireflies();
-initVolcano();
-updateHUD();
-loop();
+window.addEventListener('load',()=>{setTimeout(()=>{const ins=document.querySelector('ins.adsbygoogle');if(ins&&ins.getAttribute('data-ad-status')==='filled'){const fb=document.getElementById('ad-fallback');if(fb)fb.style.display='none';}},2500);});
+initGround();initClouds();initStars();initTrees();initBushes();initBgBirds();initFireflies();initVolcano();updateHUD();loop();
 </script>
 </body>
 </html>
-
