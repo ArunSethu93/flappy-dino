@@ -39,7 +39,8 @@
     <div id="hud-right"><span id="speed-display">SPD LV.1</span></div>
   </div>
   <div id="canvas-wrap"><canvas id="c" width="800" height="400"></canvas></div>
-  <div id="tip">SPACE / ENTER — FLAP &amp; RESTART · +50 PIPE · +100 NEAR MISS · 🔥 STREAK EVERY 5 PIPES · ⚡ SPEED UP EVERY 1000 PTS</div>
+  <div id="tip">SPACE / ENTER — FLAP &amp; 
+    RESTART · +50 PIPE · +100 NEAR MISS · 🔥 STREAK EVERY 5 PIPES · ⚡ SPEED UP EVERY 1000 PTS</div>
 </div>
 <div id="ad-section">
   <div id="ad-label">Advertisement</div>
@@ -60,7 +61,8 @@ const canvasWrap=document.getElementById('canvas-wrap');
 function spawnPop(t,c,lx,ly){const s=canvas.getBoundingClientRect().width/W,el=document.createElement('div');el.className=`bonus-pop ${c}`;el.textContent=t;el.style.left=(lx*s)+'px';el.style.top=(ly*s)+'px';canvasWrap.appendChild(el);el.addEventListener('animationend',()=>el.remove());}
 function px(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h);}
 const bird={x:BIRD_X,y:H/2-20,vy:0,angle:0,dead:false,wingFrame:0,wingTick:0,flapAnim:0,reset(){this.y=H/2-20;this.vy=0;this.angle=0;this.dead=false;this.wingFrame=0;this.wingTick=0;this.flapAnim=0;},flap(){this.vy=FLAP_V;this.flapAnim=12;sfxFlap();},update(){this.vy+=GRAVITY;this.y+=this.vy;const t=Math.max(-0.42,Math.min(Math.PI/2.2,this.vy*0.058));this.angle+=(t-this.angle)*0.18;if(this.flapAnim>0){this.flapAnim--;this.wingFrame=0;}else{this.wingTick++;if(this.wingTick>8){this.wingFrame=(this.wingFrame+1)%3;this.wingTick=0;}}if(this.y<10){this.y=10;this.vy=0;}},hitbox(){return{x:this.x-9,y:this.y-9,w:18,h:18}}};
-function drawBird(){ctx.save();ctx.translate(Math.round(bird.x),Math.round(bird.y));ctx.rotate(bird.angle);const C=bird.dead?'#cc0000':fg(),BG=bg();px(-11,-8,22,16,C);px(-13,-4,26,8,C);px(-10,-10,20,4,C);px(-10,6,20,4,C);px(-6,-4,10,8,BG);px(-5,-5,8,2,BG);px(10,-3,8,3,C);px(10,0,7,3,C);px(14,-1,3,2,BG);if(bird.dead){px(4,-7,2,8,BG);px(2,-7,8,2,C);px(2,-1,8,2,C);px(2,-7,2,8,C);px(8,-7,2,8,C);}else{px(3,-7,8,8,BG);px(5,-5,4,4,C);px(6,-6,2,2,BG);}if(bird.wingFrame===0){px(-10,-14,16,6,C);px(-8,-12,14,4,C);px(-6,-16,10,4,C);}else if(bird.wingFrame===1){px(-12,-6,16,4,C);px(-10,-8,14,4,C);}else{px(-12,4,16,6,C);px(-9,6,14,4,C);px(-6,8,10,4,C);}px(-14,-2,4,10,C);px(-16,0,4,6,C);px(-18,1,4,4,C);ctx.restore();}
+function drawBird(){ctx.save();
+                    ctx.translate(Math.round(bird.x),Math.round(bird.y));ctx.rotate(bird.angle);const C=bird.dead?'#cc0000':fg(),BG=bg();px(-11,-8,22,16,C);px(-13,-4,26,8,C);px(-10,-10,20,4,C);px(-10,6,20,4,C);px(-6,-4,10,8,BG);px(-5,-5,8,2,BG);px(10,-3,8,3,C);px(10,0,7,3,C);px(14,-1,3,2,BG);if(bird.dead){px(4,-7,2,8,BG);px(2,-7,8,2,C);px(2,-1,8,2,C);px(2,-7,2,8,C);px(8,-7,2,8,C);}else{px(3,-7,8,8,BG);px(5,-5,4,4,C);px(6,-6,2,2,BG);}if(bird.wingFrame===0){px(-10,-14,16,6,C);px(-8,-12,14,4,C);px(-6,-16,10,4,C);}else if(bird.wingFrame===1){px(-12,-6,16,4,C);px(-10,-8,14,4,C);}else{px(-12,4,16,6,C);px(-9,6,14,4,C);px(-6,8,10,4,C);}px(-14,-2,4,10,C);px(-16,0,4,6,C);px(-18,1,4,4,C);ctx.restore();}
 let pipes=[],pipeTimer=0,nextPipeIn=120;
 function spawnPipe(){const minT=50,maxT=GROUND_Y-GAP-50;pipes.push({x:W+10,gapTop:minT+Math.floor(Math.random()*(maxT-minT)),scored:false});}
 function drawPipe(p){const C=fg(),cH=24,cW=PIPE_W+10,cX=p.x-5;if(p.gapTop>0){px(p.x,0,PIPE_W,p.gapTop,C);px(cX,p.gapTop-cH,cW,cH,C);px(p.x+6,0,4,p.gapTop-cH,bg());px(p.x+PIPE_W-10,0,4,p.gapTop-cH,bg());px(cX+4,p.gapTop-cH+4,cW-8,4,bg());}const bY=p.gapTop+GAP,bH=GROUND_Y-bY;if(bH>0){px(p.x,bY,PIPE_W,bH,C);px(cX,bY,cW,cH,C);px(p.x+6,bY+cH,4,bH-cH,bg());px(p.x+PIPE_W-10,bY+cH,4,bH-cH,bg());px(cX+4,bY+4,cW-8,4,bg());px(p.x-2,GROUND_Y-4,PIPE_W+4,4,C);}}
